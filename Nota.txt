@@ -1,0 +1,24 @@
+Una vez realizado el composer update hay que cambiar el metodo de post a get de la
+la funcion login de la libreria del servidor en:
+
+vendor/jasny/sso/src/Server.php
+
+la funcion debe quedar asi:
+
+
+public function login()
+{
+    $this->startBrokerSession();
+    //dd($_GET);
+    if (empty($_GET['username'])) $this->fail("No username specified", 400);
+    if (empty($_GET['password'])) $this->fail("No password specified", 400);
+
+    $validation = $this->authenticate($_GET['username'], $_GET['password']);
+
+    if ($validation->failed()) {
+        return $this->fail($validation->getError(), 400);
+    }
+
+    $this->setSessionData('sso_user', $_GET['username']);
+    $this->userInfo();
+}
